@@ -1,0 +1,74 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-ink text-white/90 antialiased;
+  background-image:
+    radial-gradient(60rem 60rem at 80% -10%, rgba(124, 58, 237, 0.18), transparent 60%),
+    radial-gradient(50rem 50rem at -10% 20%, rgba(236, 72, 153, 0.15), transparent 55%);
+  background-attachment: fixed;
+}
+
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-7xl px-5 sm:px-8;
+  }
+
+  .glass {
+    @apply rounded-3xl border border-white/10 bg-white/[0.04] backdrop-blur-xl;
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-white/70;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-bold transition focus:outline-none disabled:opacity-50;
+  }
+  .btn-grad {
+    @apply btn bg-grad-brand text-white shadow-glow hover:brightness-110;
+  }
+  .btn-lime {
+    @apply btn bg-neon-lime text-ink hover:shadow-glow-lime;
+  }
+  .btn-outline {
+    @apply btn border border-white/15 bg-white/5 text-white hover:bg-white/10;
+  }
+
+  .heading-xl {
+    @apply font-display font-bold tracking-tight;
+  }
+
+  .gradient-text {
+    @apply bg-grad-brand bg-clip-text text-transparent;
+  }
+  .gradient-text-lime {
+    @apply bg-grad-lime bg-clip-text text-transparent;
+  }
+
+  .section-label {
+    @apply mb-2 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.25em] text-neon-lime;
+  }
+}
+
+/* Custom scrollbar for the bold dark look */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #0a0a12;
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(#7c3aed, #ec4899);
+  border-radius: 999px;
+}
