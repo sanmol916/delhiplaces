@@ -2,24 +2,37 @@
   "name": "mohalla",
   "version": "0.1.0",
   "private": true,
-  "description": "Mohalla — a bold hyperlocal neighbourhood hub. Multi-tenant, bilingual (EN/HI).",
+  "description": "Mohalla — a bold, data-driven, multi-tenant, bilingual (EN/HI) hyperlocal platform.",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma generate && next build",
+    "vercel-build": "prisma generate && prisma db push --accept-data-loss && (tsx prisma/seed.ts || echo 'seed step skipped') && next build",
+    "postinstall": "prisma generate",
     "start": "next start",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "db:push": "prisma db push",
+    "db:seed": "tsx prisma/seed.ts",
+    "setup": "prisma generate && prisma db push && tsx prisma/seed.ts"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
+    "@prisma/client": "^5.18.0",
+    "bcryptjs": "^2.4.3",
     "clsx": "^2.1.1",
     "framer-motion": "^11.3.8",
+    "jose": "^5.6.3",
     "lucide-react": "^0.417.0",
     "next": "14.2.35",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "tailwind-merge": "^2.4.0"
+    "tailwind-merge": "^2.4.0",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20.14.12",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
@@ -27,7 +40,9 @@
     "eslint": "^8.57.0",
     "eslint-config-next": "14.2.35",
     "postcss": "^8.4.40",
+    "prisma": "^5.18.0",
     "tailwindcss": "^3.4.7",
+    "tsx": "^4.16.2",
     "typescript": "^5.5.4"
   }
 }

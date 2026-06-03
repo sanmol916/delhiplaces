@@ -1,0 +1,88 @@
+// Mohalla schema (PostgreSQL). One database powers every area (multi-tenant).
+// Bilingual fields are stored as paired *En / *Hi columns.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// Admins who manage areas and content via the CMS.
+model AdminUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String?
+  role         String   @default("admin")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+/// A neighbourhood. Each area decides which modules it shows (modulesCsv).
+model Area {
+  id         String  @id @default(cuid())
+  slug       String  @unique
+  nameEn     String
+  nameHi     String
+  taglineEn  String
+  taglineHi  String
+  blurbEn    String
+  blurbHi    String
+  accent     String  @default("violet") // violet | lime | cyan
+  heroImage  String
+  mapQuery   String  @default("Delhi")
+  modulesCsv String  @default("") // ordered module keys, comma-separated
+  statsJson  String  @default("[]") // [{labelEn,labelHi,value}]
+  tickerJson String  @default("[]") // [{en,hi}]
+  published  Boolean @default(true)
+  sortOrder  Int     @default(0)
+
+  items     Item[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+/// A generic, bilingual content item. `kind` selects how it renders on the
+/// public site (rentals, news, alerts, hospitals, …). Type-specific fields use
+/// the shared columns below (see src/lib/content.ts for the mapping).
+model Item {
+  id        String  @id @default(cuid())
+  area      Area    @relation(fields: [areaId], references: [id], onDelete: Cascade)
+  areaId    String
+  kind      String // module key: rentals | pg | institutes | news | openings | events | businesses | influencers | lostfound | schools | hospitals | police | atms | alerts | advertiser
+  sortOrder Int     @default(0)
+  published Boolean @default(true)
+
+  // Primary text
+  nameEn String
+  nameHi String @default("")
+
+  // Description / blurb / summary / detail / tagline
+  descEn String @default("")
+  descHi String @default("")
+
+  // Secondary label: category / type / niche / board / address / venue / block
+  secEn String @default("")
+  secHi String @default("")
+
+  // Tertiary: tag / time / window / offer / status label
+  extraEn String @default("")
+  extraHi String @default("")
+
+  image  String?
+  price  Int?
+  rating Float?
+  phone  String?
+  meta   String? // handle / board / bank / subtype (lost|found, power|water)
+  meta2  String? // followers / alert status (ongoing|scheduled|resolved)
+  flag   Boolean @default(false) // emergency / 24x7 / verified
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([areaId])
+  @@index([kind])
+}

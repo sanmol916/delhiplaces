@@ -1,16 +1,36 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { jwtVerify } from "jose";
 import { resolveTenant } from "@/lib/tenants";
 
-/**
- * If the request comes in on a tenant domain (e.g. laxminagardelhi.com),
- * transparently show that area's hub at the root URL. The address bar still
- * reads "/", but the app renders /laxmi-nagar. On any other host (localhost,
- * the default domain), the normal landing page is shown.
- */
-export function middleware(req: NextRequest) {
+const secret = new TextEncoder().encode(
+  process.env.AUTH_SECRET || "dev-only-insecure-secret-change-me",
+);
+const ADMIN_COOKIE = "mohalla_admin";
+
+export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  // Only rewrite the root path; deeper paths work normally.
+  // 1. Protect the admin area (except the login page).
+  if (pathname.startsWith("/admin") && pathname !== "/admin/login") {
+    const token = req.cookies.get(ADMIN_COOKIE)?.value;
+    let valid = false;
+    if (token) {
+      try {
+        await jwtVerify(token, secret);
+        valid = true;
+      } catch {
+        valid = false;
+      }
+    }
+    if (!valid) {
+      const url = req.nextUrl.clone();
+      url.pathname = "/admin/login";
+      return NextResponse.redirect(url);
+    }
+    return NextResponse.next();
+  }
+
+  // 2. Multi-tenant: on a mapped domain, show that area's hub at "/".
   if (pathname === "/") {
     const slug = resolveTenant(req.headers.get("host"));
     if (slug) {
@@ -24,6 +44,5 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  // Skip static assets and Next internals.
   matcher: ["/((?!_next|favicon.ico|.*\\..*).*)"],
 };

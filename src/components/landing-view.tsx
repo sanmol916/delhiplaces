@@ -8,10 +8,11 @@ import { ui } from "@/lib/dictionary";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { Reveal } from "@/components/reveal";
-import { areas, accentTheme } from "@/lib/areas";
+import { accentTheme } from "@/lib/areas";
+import type { AreaMeta } from "@/lib/content";
 import { cn } from "@/lib/utils";
 
-export function LandingView() {
+export function LandingView({ areas }: { areas: AreaMeta[] }) {
   const { t } = useT();
 
   return (
@@ -52,55 +53,67 @@ export function LandingView() {
           </h2>
         </Reveal>
 
-        <div className="mt-6 grid gap-6 md:grid-cols-2">
-          {areas.map((area, i) => {
-            const th = accentTheme[area.accent];
-            return (
-              <Reveal key={area.slug} delay={i * 0.08}>
-                <Link
-                  href={`/${area.slug}`}
-                  className="group relative block overflow-hidden rounded-[2rem] border border-white/10"
-                >
-                  <div className="relative aspect-[16/11] overflow-hidden">
-                    <Image
-                      src={area.heroImage}
-                      alt={t(area.name)}
-                      fill
-                      sizes="(max-width:768px) 100vw, 50vw"
-                      className="object-cover transition duration-700 group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/50 to-transparent" />
-                  </div>
-
-                  <div className="absolute inset-x-0 bottom-0 p-6">
-                    <p className="flex items-center gap-1.5 text-sm text-white/60">
-                      <MapPin className="h-4 w-4" /> {t(area.tagline)}
-                    </p>
-                    <h3 className="heading-xl mt-1 text-4xl text-white">
-                      <span className={cn("bg-clip-text text-transparent", th.gradient)}>
-                        {t(area.name)}
-                      </span>
-                    </h3>
-
-                    <div className="mt-4 flex items-center justify-between">
-                      <div className="flex gap-4">
-                        {area.stats.slice(0, 2).map((s) => (
-                          <div key={s.label.en}>
-                            <p className={cn("text-lg font-bold heading-xl", th.text)}>{s.value}</p>
-                            <p className="text-[11px] uppercase tracking-wide text-white/45">{t(s.label)}</p>
-                          </div>
-                        ))}
-                      </div>
-                      <span className={cn("flex h-12 w-12 items-center justify-center rounded-full text-ink transition group-hover:scale-110", th.gradient)}>
-                        <ArrowUpRight className="h-6 w-6" />
-                      </span>
+        {areas.length === 0 ? (
+          <div className="glass mx-auto mt-6 max-w-lg p-10 text-center">
+            <p className="text-lg font-semibold text-white">No areas yet</p>
+            <p className="mt-1 text-white/55">
+              Add your first area from the admin dashboard.
+            </p>
+            <Link href="/admin" className="btn-grad mt-5">
+              Go to admin
+            </Link>
+          </div>
+        ) : (
+          <div className="mt-6 grid gap-6 md:grid-cols-2">
+            {areas.map((area, i) => {
+              const th = accentTheme[area.accent] ?? accentTheme.violet;
+              return (
+                <Reveal key={area.slug} delay={i * 0.08}>
+                  <Link
+                    href={`/${area.slug}`}
+                    className="group relative block overflow-hidden rounded-[2rem] border border-white/10"
+                  >
+                    <div className="relative aspect-[16/11] overflow-hidden">
+                      <Image
+                        src={area.heroImage}
+                        alt={t(area.name)}
+                        fill
+                        sizes="(max-width:768px) 100vw, 50vw"
+                        className="object-cover transition duration-700 group-hover:scale-110"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/50 to-transparent" />
                     </div>
-                  </div>
-                </Link>
-              </Reveal>
-            );
-          })}
-        </div>
+
+                    <div className="absolute inset-x-0 bottom-0 p-6">
+                      <p className="flex items-center gap-1.5 text-sm text-white/60">
+                        <MapPin className="h-4 w-4" /> {t(area.tagline)}
+                      </p>
+                      <h3 className="heading-xl mt-1 text-4xl text-white">
+                        <span className={cn("bg-clip-text text-transparent", th.gradient)}>
+                          {t(area.name)}
+                        </span>
+                      </h3>
+
+                      <div className="mt-4 flex items-center justify-between">
+                        <div className="flex gap-4">
+                          {area.stats.slice(0, 2).map((s, idx) => (
+                            <div key={idx}>
+                              <p className={cn("text-lg font-bold heading-xl", th.text)}>{s.value}</p>
+                              <p className="text-[11px] uppercase tracking-wide text-white/45">{t(s.label)}</p>
+                            </div>
+                          ))}
+                        </div>
+                        <span className={cn("flex h-12 w-12 items-center justify-center rounded-full text-ink transition group-hover:scale-110", th.gradient)}>
+                          <ArrowUpRight className="h-6 w-6" />
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                </Reveal>
+              );
+            })}
+          </div>
+        )}
       </section>
 
       <Footer />

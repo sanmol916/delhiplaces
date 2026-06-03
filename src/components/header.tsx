@@ -2,10 +2,9 @@
 
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
-import { useT } from "@/lib/i18n";
+import { useT, type Localized } from "@/lib/i18n";
 import { ui } from "@/lib/dictionary";
 import { LanguageToggle } from "@/components/language-toggle";
-import type { Area } from "@/lib/areas";
 
 export function Logo() {
   return (
@@ -29,7 +28,7 @@ const NAV = [
   { href: "#businesses", label: ui.navBusinesses },
 ];
 
-export function Header({ area }: { area?: Area }) {
+export function Header({ area }: { area?: { name: Localized } }) {
   const { t } = useT();
 
   return (

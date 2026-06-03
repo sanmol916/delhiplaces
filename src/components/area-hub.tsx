@@ -27,89 +27,101 @@ import {
   AtmCard,
   InfluencerCard,
 } from "@/components/cards-extra";
-import { accentTheme, type Area, type ModuleKey } from "@/lib/areas";
+import {
+  accentTheme,
+  type ModuleKey,
+  type Rental,
+  type Spot,
+  type NewsItem,
+  type EventItem,
+  type LostFound,
+  type Business,
+  type Influencer,
+  type School,
+  type Hospital,
+  type Police,
+  type Atm,
+  type Alert,
+} from "@/lib/areas";
+import type { AreaContent } from "@/lib/content";
 import { cn } from "@/lib/utils";
 
 const GRID_2 = "grid gap-4 sm:grid-cols-2";
 const GRID_3 = "grid gap-5 sm:grid-cols-2 lg:grid-cols-3";
 
-function ModuleBlock({ area, k }: { area: Area; k: ModuleKey }) {
+function ModuleBlock({ content, k }: { content: AreaContent; k: ModuleKey }) {
   const { t } = useT();
   const copy = sections[k];
-
+  const list = content.items[k] ?? [];
   let body: React.ReactNode = null;
 
   switch (k) {
     case "alerts":
-      if (!area.alerts.length) return null;
+      if (!list.length) return null;
       body = (
         <div className={GRID_2}>
-          {area.alerts.map((a) => <AlertCard key={a.id} item={a} />)}
+          {(list as Alert[]).map((a) => <AlertCard key={a.id} item={a} />)}
         </div>
       );
       break;
     case "advertiser":
-      body = <AdvertiserCard item={area.advertiser} />;
+      if (!content.advertiser) return null;
+      body = <AdvertiserCard item={content.advertiser} />;
       break;
     case "rentals":
-      body = (
-        <div className={GRID_3}>
-          {area.rentals.map((r) => <RentalCard key={r.id} item={r} accent={area.accent} />)}
-        </div>
-      );
-      break;
     case "pg":
-      if (!area.pgs?.length) return null;
+      if (!list.length) return null;
       body = (
         <div className={GRID_3}>
-          {area.pgs.map((r) => <RentalCard key={r.id} item={r} accent={area.accent} />)}
+          {(list as Rental[]).map((r) => (
+            <RentalCard key={r.id} item={r} accent={content.meta.accent} />
+          ))}
         </div>
       );
       break;
     case "institutes":
-      if (!area.institutes?.length) return null;
+    case "openings":
+      if (!list.length) return null;
       body = (
         <div className={GRID_3}>
-          {area.institutes.map((s) => <OpeningCard key={s.id} item={s} />)}
+          {(list as Spot[]).map((s) => <OpeningCard key={s.id} item={s} />)}
         </div>
       );
       break;
     case "news":
+      if (!list.length) return null;
       body = (
         <div className="grid gap-4 lg:grid-cols-2">
-          {area.news.map((n) => <NewsCard key={n.id} item={n} />)}
-        </div>
-      );
-      break;
-    case "openings":
-      body = (
-        <div className={GRID_2}>
-          {area.openings.map((o) => <OpeningCard key={o.id} item={o} />)}
+          {(list as NewsItem[]).map((n) => <NewsCard key={n.id} item={n} />)}
         </div>
       );
       break;
     case "events":
+      if (!list.length) return null;
       body = (
         <div className={GRID_2}>
-          {area.events.map((e) => <EventCard key={e.id} item={e} />)}
+          {(list as EventItem[]).map((e) => <EventCard key={e.id} item={e} />)}
         </div>
       );
       break;
     case "businesses":
+      if (!list.length) return null;
       body = (
         <div className={GRID_3}>
-          {area.businesses.map((b) => <BusinessCard key={b.id} item={b} />)}
+          {(list as Business[]).map((b) => <BusinessCard key={b.id} item={b} />)}
         </div>
       );
       break;
     case "influencers":
+      if (!list.length) return null;
       body = (
         <div className={GRID_2}>
-          {area.influencers.map((i) => <InfluencerCard key={i.id} item={i} />)}
+          {(list as Influencer[]).map((i) => <InfluencerCard key={i.id} item={i} />)}
         </div>
       );
       break;
     case "lostfound":
+      if (!list.length) return null;
       body = (
         <>
           <div className="mb-5 flex flex-col gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:flex-row sm:items-center sm:justify-between">
@@ -119,41 +131,45 @@ function ModuleBlock({ area, k }: { area: Area; k: ModuleKey }) {
             </button>
           </div>
           <div className={GRID_2}>
-            {area.lostFound.map((l) => <LostFoundCard key={l.id} item={l} />)}
+            {(list as LostFound[]).map((l) => <LostFoundCard key={l.id} item={l} />)}
           </div>
         </>
       );
       break;
     case "schools":
+      if (!list.length) return null;
       body = (
         <div className={GRID_2}>
-          {area.schools.map((s) => <SchoolCard key={s.id} item={s} />)}
+          {(list as School[]).map((s) => <SchoolCard key={s.id} item={s} />)}
         </div>
       );
       break;
     case "hospitals":
+      if (!list.length) return null;
       body = (
         <div className={GRID_2}>
-          {area.hospitals.map((h) => <HospitalCard key={h.id} item={h} />)}
+          {(list as Hospital[]).map((h) => <HospitalCard key={h.id} item={h} />)}
         </div>
       );
       break;
     case "police":
+      if (!list.length) return null;
       body = (
         <div className={GRID_2}>
-          {area.police.map((p) => <PoliceCard key={p.id} item={p} />)}
+          {(list as Police[]).map((p) => <PoliceCard key={p.id} item={p} />)}
         </div>
       );
       break;
     case "atms":
+      if (!list.length) return null;
       body = (
         <div className={GRID_3}>
-          {area.atms.map((a) => <AtmCard key={a.id} item={a} />)}
+          {(list as Atm[]).map((a) => <AtmCard key={a.id} item={a} />)}
         </div>
       );
       break;
     case "map":
-      body = <MapEmbed query={area.mapQuery} />;
+      body = <MapEmbed query={content.meta.mapQuery} />;
       break;
   }
 
@@ -169,13 +185,14 @@ function ModuleBlock({ area, k }: { area: Area; k: ModuleKey }) {
   );
 }
 
-export function AreaHub({ area }: { area: Area }) {
+export function AreaHub({ content }: { content: AreaContent }) {
   const { t } = useT();
-  const th = accentTheme[area.accent];
+  const { meta } = content;
+  const th = accentTheme[meta.accent] ?? accentTheme.violet;
 
   return (
     <>
-      <Header area={area} />
+      <Header area={{ name: meta.name }} />
 
       {/* Hero */}
       <section className="relative overflow-hidden">
@@ -183,14 +200,14 @@ export function AreaHub({ area }: { area: Area }) {
           <div>
             <span className="chip">
               <Sparkles className="h-3.5 w-3.5 text-neon-lime" />
-              {t(area.tagline)}
+              {t(meta.tagline)}
             </span>
             <h1 className="heading-xl mt-4 text-5xl leading-[1.05] text-white sm:text-6xl lg:text-7xl">
               <span className={cn("bg-clip-text text-transparent", th.gradient)}>
-                {t(area.name)}
+                {t(meta.name)}
               </span>
             </h1>
-            <p className="mt-5 max-w-md text-lg text-white/60">{t(area.blurb)}</p>
+            <p className="mt-5 max-w-md text-lg text-white/60">{t(meta.blurb)}</p>
 
             <div className="mt-7 flex flex-wrap gap-3">
               <a href="#rentals" className="btn-grad">
@@ -201,33 +218,35 @@ export function AreaHub({ area }: { area: Area }) {
               </a>
             </div>
 
-            <dl className="mt-10 grid grid-cols-4 gap-3">
-              {area.stats.map((s) => (
-                <div key={s.label.en} className="glass px-3 py-4 text-center">
-                  <dt className={cn("text-2xl font-bold heading-xl", th.text)}>{s.value}</dt>
-                  <dd className="mt-1 text-[11px] uppercase tracking-wide text-white/45">
-                    {t(s.label)}
-                  </dd>
-                </div>
-              ))}
-            </dl>
+            {meta.stats.length > 0 && (
+              <dl className="mt-10 grid grid-cols-4 gap-3">
+                {meta.stats.map((s, i) => (
+                  <div key={i} className="glass px-3 py-4 text-center">
+                    <dt className={cn("text-2xl font-bold heading-xl", th.text)}>{s.value}</dt>
+                    <dd className="mt-1 text-[11px] uppercase tracking-wide text-white/45">
+                      {t(s.label)}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            )}
           </div>
 
           <div className="relative">
             <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem] border border-white/10 shadow-glow lg:animate-float">
-              <Image src={area.heroImage} alt={t(area.name)} fill priority sizes="50vw" className="object-cover" />
+              <Image src={meta.heroImage} alt={t(meta.name)} fill priority sizes="50vw" className="object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-ink/70 via-transparent to-transparent" />
             </div>
           </div>
         </div>
       </section>
 
-      <NewsTicker items={area.ticker} />
+      {meta.ticker.length > 0 && <NewsTicker items={meta.ticker} />}
 
-      {/* All modules, ordered per area */}
+      {/* Modules, ordered per area */}
       <div className="container-page space-y-20 py-20">
-        {area.modules.map((k) => (
-          <ModuleBlock key={k} area={area} k={k} />
+        {meta.modules.map((k) => (
+          <ModuleBlock key={k} content={content} k={k} />
         ))}
 
         {/* Join community */}
